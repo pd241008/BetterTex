@@ -1,0 +1,12 @@
+[package]
+name = "texcraft-backend"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "TexCraft Rust control-plane orchestrator (FSM, BLAKE3 DAG, SHM broker, worker supervision)"
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+uuid.workspace = true
+memmap2.workspace = true
