@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://texcraft.local/schemas/ipc_envelope.schema.json",
+  "title": "TexCraft Unified JSON Response Envelope (Spec §1.4)",
+  "type": "object",
+  "required": ["status", "code", "data", "meta", "error"],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["success", "error"]
+    },
+    "code": {
+      "type": "string",
+      "description": "Machine-readable control-plane code, e.g. BUILD_STAGE_COMPLETE or ERR_PRIORITY_LOCK_REMOTE_AHEAD.",
+      "examples": ["BUILD_STAGE_COMPLETE", "ERR_PRIORITY_LOCK_REMOTE_AHEAD"]
+    },
+    "data": {
+      "description": "Stage-specific payload object, or literally null (always serialized, even when null).",
+      "type": ["object", "null"],
+      "properties": {
+        "stage": {
+          "type": "string",
+          "enum": ["B1_GO_HEURISTIC_SCAN", "B2_LAZY_MODULE_TRANSPILATION", "B3_CPP_WARM_COMPILE"]
+        },
+        "shm_descriptor": {
+          "type": "string",
+          "description": "POSIX-style shared-memory name, e.g. /texcraft_shm_buf_01 (data plane, ADR-005)."
+        },
+        "pdf_byte_len": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "synctex_path": {
+          "type": "string"
+        }
+      }
+    },
+    "meta": {
+      "type": "object",
+      "required": ["trace_id", "push_locked"],
+      "properties": {
+        "trace_id": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "description": "UUIDv7 minted by backend telemetry middleware and propagated unchanged across Rust/Go/C++ boundaries (§1.3)."
+        },
+        "sync_state": {
+          "type": "string",
+          "enum": ["S0_BOOT_PROBE", "S1_AUTO_PULL_FF", "S2_SYNCED_READY", "S3_PRIORITY_LOCKED", "S3_RECONCILE", "S4_ATOMIC_PUSH"]
+        },
+        "push_locked": {
+          "type": "boolean",
+          "description": "True in every state except S2_SYNCED_READY (and S4 while a push is in flight)."
+        },
+        "timings_ms": {
+          "type": "object",
+          "properties": {
+            "git_probe": { "type": "integer", "minimum": 0 },
+            "go_heuristic_scan": { "type": "integer", "minimum": 0 },
+            "lazy_sidecar": { "type": "integer", "minimum": 0 },
+            "cpp_compile": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "remote_head_sha": { "type": "string" },
+        "local_base_sha": { "type": "string" }
+      }
+    },
+    "error": {
+      "description": "Error descriptor, or literally null on success (always serialized).",
+      "type": ["object", "null"],
+      "properties": {
+        "message": { "type": "string" },
+        "remediation": {
+          "type": "string",
+          "description": "Machine-usable next action for the client, e.g. TRIGGER_S3_RECONCILE."
+        }
+      },
+      "required": ["message"]
+    }
+  }
+}
