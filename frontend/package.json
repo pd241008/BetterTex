@@ -1,0 +1,9 @@
+{
+  "name": "texcraft-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "TexCraft split-pane LaTeX IDE UI — editor + SyncTeX PDF viewport (Phase 5)",
+  "scripts": {
+    "dev": "echo 'frontend implementation lands in Phase 5 (AGENT_HANDOFF_SPEC.md SS5)'"
+  }
+}
