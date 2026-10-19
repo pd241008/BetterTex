@@ -1,0 +1,17 @@
+# Rust
+/target/
+
+# Go scanner daemon artifacts
+worker/go-scanner/scanner
+worker/go-scanner/*.sock
+
+# C++ / CMake
+worker/cpp-compiler/build/
+worker/cpp-compiler/lib/
+*.o
+
+# TexCraft local caches (never commit runtime state)
+.texcraft_cache/
+
+# Editors / OS
+.DS_Store
